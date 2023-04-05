@@ -80,6 +80,9 @@ struct VideoWithContextRenderer: Decodable {
             return
         }
         let videoContainer = try container.nestedContainer(keyedBy: CodingKeys.self, forKey: .videoWithContextRenderer)
+        if !videoContainer.contains(.lengthText) {
+            return
+        }
         self.videoId = try videoContainer.decode(String.self, forKey: .videoId)
         
         let lengthTextContainer = try videoContainer.nestedContainer(keyedBy: YtBaseCodingKeys.self, forKey: .lengthText)
@@ -97,7 +100,6 @@ struct VideoWithContextRenderer: Decodable {
         let headlineRunsContainers = try headlineRunsContainer.nestedContainer(keyedBy: YtBaseCodingKeys.self)
         self.title = try headlineRunsContainers.decode(String.self, forKey: .values)
         print(title)
-        let video = LikeVideo(videoId: self.videoId, title: self.title, thumnail: "https://i.ytimg.com/vi/\(self.videoId)/hqdefault.jpg", channelTitle: self.channelTitle, runTime: self.vidLength)
     }
     
 }
@@ -126,7 +128,7 @@ struct VidSearch:  Decodable {
     }
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: RootContainerKeys.self)
-        var contents1Container = try container.nestedContainer(keyedBy: RootContainerKeys.self, forKey: .contents)
+        let contents1Container = try container.nestedContainer(keyedBy: RootContainerKeys.self, forKey: .contents)
         let sectionListContainer = try contents1Container.nestedContainer(keyedBy: SectionListContainerKeys.self, forKey: .sectionListRenderer)
         self.next = try sectionListContainer.decode([SectionList].self, forKey: .contents)
     }
